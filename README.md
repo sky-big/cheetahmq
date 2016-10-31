@@ -1,1 +1,1 @@
-CheetahMQ:
+CheetahMQ: AMQP Server
