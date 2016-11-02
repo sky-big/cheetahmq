@@ -35,6 +35,8 @@ func NewCheetahd(options *Options) (cheetahd *Cheetahd) {
 
 // Cheetahd Start
 func (cheetahd *Cheetahd) Start() {
+	cheetahd.log.Info("CheetahMQ Server Starting")
+
 	cheetahdContent := &cheetahdContent{cheetahd}
 	// start tcp listen
 	tcpListener, err := net.Listen("tcp", cheetahd.options.TcpListenAddress)
@@ -48,15 +50,18 @@ func (cheetahd *Cheetahd) Start() {
 
 	// start tcp acceptor groutime by option
 	for i := 0; i < cheetahd.options.TcpAcceptorNum; i++ {
-		tcpAcceptor := &tcpAcceptor{cheetahdContent}
+		TcpAcceptor := &TcpAcceptor{cheetahdContent}
 		index := i
 		cheetahd.waitGroup.Wrap(func() {
-			tcpAcceptor.AcceptorListen(index, tcpListener)
+			TcpAcceptor.AcceptorListen(index, tcpListener)
 		})
 	}
-	cheetahd.log.Info("CheetahMQ Server Starting")
 }
 
-func (c *Cheetahd) Exit() {
-
+// cheetahmq server exit
+func (cheetahd *Cheetahd) Exit() {
+	cheetahd.Lock()
+	cheetahd.tcpListener.Close()
+	cheetahd.Unlock()
+	cheetahd.waitGroup.Wait()
 }

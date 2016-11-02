@@ -63,7 +63,8 @@ func (p *program) Start() error {
 	// Cheetahd start
 	p.cheetahd.Start()
 
-	log.Println("CheetahMQ Server Started")
+	// cheetahd server started log
+	p.cheetahd.log.Info("CheetahMQ Server Started")
 
 	return nil
 }

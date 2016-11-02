@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func (me *writer) WriteFrame(frame frame) (err error) {
-	if err = frame.write(me.w); err != nil {
+func WriteFrame(me *Writer, frame frame) (err error) {
+	if err = frame.write(me.W); err != nil {
 		return
 	}
 
-	if buf, ok := me.w.(*bufio.Writer); ok {
+	if buf, ok := me.W.(*bufio.Writer); ok {
 		err = buf.Flush()
 	}
 

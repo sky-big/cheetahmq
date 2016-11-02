@@ -220,16 +220,16 @@ var (
             {{end}}
     {{end}}
 
-    func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
+    func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
         mf := &methodFrame {
             ChannelId: channel,
         }
 
-        if err = binary.Read(me.r, binary.BigEndian, &mf.ClassId); err != nil {
+        if err = binary.Read(me.R, binary.BigEndian, &mf.ClassId); err != nil {
           return
         }
 
-        if err = binary.Read(me.r, binary.BigEndian, &mf.MethodId); err != nil {
+        if err = binary.Read(me.R, binary.BigEndian, &mf.MethodId); err != nil {
           return
         }
 
@@ -242,7 +242,7 @@ var (
                             case {{.Index}}: // {{$class.Name}} {{.Name}}
                             //fmt.Println("NextMethod: class:{{$class.Index}} method:{{.Index}}")
                             method := &{{$.StructName $class.Name .Name}}{}
-                            if err = method.read(me.r); err != nil {
+                            if err = method.read(me.R); err != nil {
                               return
                             }
                             mf.Method = method

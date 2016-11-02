@@ -2737,16 +2737,16 @@ func (me *confirmSelectOk) read(r io.Reader) (err error) {
 	return
 }
 
-func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
+func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
 	mf := &methodFrame{
 		ChannelId: channel,
 	}
 
-	if err = binary.Read(me.r, binary.BigEndian, &mf.ClassId); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &mf.ClassId); err != nil {
 		return
 	}
 
-	if err = binary.Read(me.r, binary.BigEndian, &mf.MethodId); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &mf.MethodId); err != nil {
 		return
 	}
 
@@ -2758,7 +2758,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // connection start
 			//fmt.Println("NextMethod: class:10 method:10")
 			method := &connectionStart{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2766,7 +2766,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // connection start-ok
 			//fmt.Println("NextMethod: class:10 method:11")
 			method := &connectionStartOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2774,7 +2774,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // connection secure
 			//fmt.Println("NextMethod: class:10 method:20")
 			method := &connectionSecure{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2782,7 +2782,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // connection secure-ok
 			//fmt.Println("NextMethod: class:10 method:21")
 			method := &connectionSecureOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2790,7 +2790,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 30: // connection tune
 			//fmt.Println("NextMethod: class:10 method:30")
 			method := &connectionTune{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2798,7 +2798,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 31: // connection tune-ok
 			//fmt.Println("NextMethod: class:10 method:31")
 			method := &connectionTuneOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2806,7 +2806,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 40: // connection open
 			//fmt.Println("NextMethod: class:10 method:40")
 			method := &connectionOpen{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2814,7 +2814,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 41: // connection open-ok
 			//fmt.Println("NextMethod: class:10 method:41")
 			method := &connectionOpenOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2822,7 +2822,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 50: // connection close
 			//fmt.Println("NextMethod: class:10 method:50")
 			method := &connectionClose{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2830,7 +2830,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 51: // connection close-ok
 			//fmt.Println("NextMethod: class:10 method:51")
 			method := &connectionCloseOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2838,7 +2838,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 60: // connection blocked
 			//fmt.Println("NextMethod: class:10 method:60")
 			method := &connectionBlocked{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2846,7 +2846,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 61: // connection unblocked
 			//fmt.Println("NextMethod: class:10 method:61")
 			method := &connectionUnblocked{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2861,7 +2861,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // channel open
 			//fmt.Println("NextMethod: class:20 method:10")
 			method := &channelOpen{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2869,7 +2869,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // channel open-ok
 			//fmt.Println("NextMethod: class:20 method:11")
 			method := &channelOpenOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2877,7 +2877,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // channel flow
 			//fmt.Println("NextMethod: class:20 method:20")
 			method := &channelFlow{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2885,7 +2885,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // channel flow-ok
 			//fmt.Println("NextMethod: class:20 method:21")
 			method := &channelFlowOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2893,7 +2893,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 40: // channel close
 			//fmt.Println("NextMethod: class:20 method:40")
 			method := &channelClose{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2901,7 +2901,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 41: // channel close-ok
 			//fmt.Println("NextMethod: class:20 method:41")
 			method := &channelCloseOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2916,7 +2916,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // exchange declare
 			//fmt.Println("NextMethod: class:40 method:10")
 			method := &exchangeDeclare{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2924,7 +2924,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // exchange declare-ok
 			//fmt.Println("NextMethod: class:40 method:11")
 			method := &exchangeDeclareOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2932,7 +2932,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // exchange delete
 			//fmt.Println("NextMethod: class:40 method:20")
 			method := &exchangeDelete{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2940,7 +2940,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // exchange delete-ok
 			//fmt.Println("NextMethod: class:40 method:21")
 			method := &exchangeDeleteOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2948,7 +2948,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 30: // exchange bind
 			//fmt.Println("NextMethod: class:40 method:30")
 			method := &exchangeBind{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2956,7 +2956,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 31: // exchange bind-ok
 			//fmt.Println("NextMethod: class:40 method:31")
 			method := &exchangeBindOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2964,7 +2964,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 40: // exchange unbind
 			//fmt.Println("NextMethod: class:40 method:40")
 			method := &exchangeUnbind{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2972,7 +2972,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 51: // exchange unbind-ok
 			//fmt.Println("NextMethod: class:40 method:51")
 			method := &exchangeUnbindOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2987,7 +2987,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // queue declare
 			//fmt.Println("NextMethod: class:50 method:10")
 			method := &queueDeclare{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -2995,7 +2995,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // queue declare-ok
 			//fmt.Println("NextMethod: class:50 method:11")
 			method := &queueDeclareOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3003,7 +3003,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // queue bind
 			//fmt.Println("NextMethod: class:50 method:20")
 			method := &queueBind{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3011,7 +3011,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // queue bind-ok
 			//fmt.Println("NextMethod: class:50 method:21")
 			method := &queueBindOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3019,7 +3019,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 50: // queue unbind
 			//fmt.Println("NextMethod: class:50 method:50")
 			method := &queueUnbind{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3027,7 +3027,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 51: // queue unbind-ok
 			//fmt.Println("NextMethod: class:50 method:51")
 			method := &queueUnbindOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3035,7 +3035,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 30: // queue purge
 			//fmt.Println("NextMethod: class:50 method:30")
 			method := &queuePurge{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3043,7 +3043,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 31: // queue purge-ok
 			//fmt.Println("NextMethod: class:50 method:31")
 			method := &queuePurgeOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3051,7 +3051,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 40: // queue delete
 			//fmt.Println("NextMethod: class:50 method:40")
 			method := &queueDelete{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3059,7 +3059,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 41: // queue delete-ok
 			//fmt.Println("NextMethod: class:50 method:41")
 			method := &queueDeleteOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3074,7 +3074,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // basic qos
 			//fmt.Println("NextMethod: class:60 method:10")
 			method := &basicQos{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3082,7 +3082,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // basic qos-ok
 			//fmt.Println("NextMethod: class:60 method:11")
 			method := &basicQosOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3090,7 +3090,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // basic consume
 			//fmt.Println("NextMethod: class:60 method:20")
 			method := &basicConsume{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3098,7 +3098,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // basic consume-ok
 			//fmt.Println("NextMethod: class:60 method:21")
 			method := &basicConsumeOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3106,7 +3106,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 30: // basic cancel
 			//fmt.Println("NextMethod: class:60 method:30")
 			method := &basicCancel{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3114,7 +3114,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 31: // basic cancel-ok
 			//fmt.Println("NextMethod: class:60 method:31")
 			method := &basicCancelOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3122,7 +3122,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 40: // basic publish
 			//fmt.Println("NextMethod: class:60 method:40")
 			method := &basicPublish{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3130,7 +3130,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 50: // basic return
 			//fmt.Println("NextMethod: class:60 method:50")
 			method := &basicReturn{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3138,7 +3138,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 60: // basic deliver
 			//fmt.Println("NextMethod: class:60 method:60")
 			method := &basicDeliver{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3146,7 +3146,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 70: // basic get
 			//fmt.Println("NextMethod: class:60 method:70")
 			method := &basicGet{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3154,7 +3154,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 71: // basic get-ok
 			//fmt.Println("NextMethod: class:60 method:71")
 			method := &basicGetOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3162,7 +3162,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 72: // basic get-empty
 			//fmt.Println("NextMethod: class:60 method:72")
 			method := &basicGetEmpty{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3170,7 +3170,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 80: // basic ack
 			//fmt.Println("NextMethod: class:60 method:80")
 			method := &basicAck{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3178,7 +3178,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 90: // basic reject
 			//fmt.Println("NextMethod: class:60 method:90")
 			method := &basicReject{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3186,7 +3186,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 100: // basic recover-async
 			//fmt.Println("NextMethod: class:60 method:100")
 			method := &basicRecoverAsync{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3194,7 +3194,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 110: // basic recover
 			//fmt.Println("NextMethod: class:60 method:110")
 			method := &basicRecover{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3202,7 +3202,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 111: // basic recover-ok
 			//fmt.Println("NextMethod: class:60 method:111")
 			method := &basicRecoverOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3210,7 +3210,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 120: // basic nack
 			//fmt.Println("NextMethod: class:60 method:120")
 			method := &basicNack{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3225,7 +3225,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // tx select
 			//fmt.Println("NextMethod: class:90 method:10")
 			method := &txSelect{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3233,7 +3233,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // tx select-ok
 			//fmt.Println("NextMethod: class:90 method:11")
 			method := &txSelectOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3241,7 +3241,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 20: // tx commit
 			//fmt.Println("NextMethod: class:90 method:20")
 			method := &txCommit{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3249,7 +3249,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 21: // tx commit-ok
 			//fmt.Println("NextMethod: class:90 method:21")
 			method := &txCommitOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3257,7 +3257,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 30: // tx rollback
 			//fmt.Println("NextMethod: class:90 method:30")
 			method := &txRollback{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3265,7 +3265,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 31: // tx rollback-ok
 			//fmt.Println("NextMethod: class:90 method:31")
 			method := &txRollbackOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3280,7 +3280,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 10: // confirm select
 			//fmt.Println("NextMethod: class:85 method:10")
 			method := &confirmSelect{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method
@@ -3288,7 +3288,7 @@ func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 		case 11: // confirm select-ok
 			//fmt.Println("NextMethod: class:85 method:11")
 			method := &confirmSelectOk{}
-			if err = method.read(me.r); err != nil {
+			if err = method.read(me.R); err != nil {
 				return
 			}
 			mf.Method = method

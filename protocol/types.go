@@ -267,12 +267,12 @@ type frame interface {
 	channel() uint16
 }
 
-type reader struct {
-	r io.Reader
+type Reader struct {
+	R io.Reader
 }
 
-type writer struct {
-	w io.Writer
+type Writer struct {
+	W io.Writer
 }
 
 // Implements the frame interface for Connection RPC

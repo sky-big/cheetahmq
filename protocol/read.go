@@ -38,10 +38,10 @@ In realistic implementations where performance is a concern, we would use
 
 “gathering reads” to avoid doing three separate system calls to read a frame.
 */
-func (me *reader) ReadFrame() (frame frame, err error) {
+func ReadFrame(me *Reader) (frame frame, err error) {
 	var scratch [7]byte
 
-	if _, err = io.ReadFull(me.r, scratch[:7]); err != nil {
+	if _, err = io.ReadFull(me.R, scratch[:7]); err != nil {
 		return
 	}
 
@@ -74,7 +74,7 @@ func (me *reader) ReadFrame() (frame frame, err error) {
 		return nil, ErrFrame
 	}
 
-	if _, err = io.ReadFull(me.r, scratch[:1]); err != nil {
+	if _, err = io.ReadFull(me.R, scratch[:1]); err != nil {
 		return nil, err
 	}
 
@@ -317,96 +317,96 @@ func hasProperty(mask uint16, prop int) bool {
 	return int(mask)&prop > 0
 }
 
-func (me *reader) parseHeaderFrame(channel uint16, size uint32) (frame frame, err error) {
+func (me *Reader) parseHeaderFrame(channel uint16, size uint32) (frame frame, err error) {
 	hf := &headerFrame{
 		ChannelId: channel,
 	}
 
-	if err = binary.Read(me.r, binary.BigEndian, &hf.ClassId); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &hf.ClassId); err != nil {
 		return
 	}
 
-	if err = binary.Read(me.r, binary.BigEndian, &hf.weight); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &hf.weight); err != nil {
 		return
 	}
 
-	if err = binary.Read(me.r, binary.BigEndian, &hf.Size); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &hf.Size); err != nil {
 		return
 	}
 
 	var flags uint16
 
-	if err = binary.Read(me.r, binary.BigEndian, &flags); err != nil {
+	if err = binary.Read(me.R, binary.BigEndian, &flags); err != nil {
 		return
 	}
 
 	if hasProperty(flags, flagContentType) {
-		if hf.Properties.ContentType, err = readShortstr(me.r); err != nil {
+		if hf.Properties.ContentType, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagContentEncoding) {
-		if hf.Properties.ContentEncoding, err = readShortstr(me.r); err != nil {
+		if hf.Properties.ContentEncoding, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagHeaders) {
-		if hf.Properties.Headers, err = readTable(me.r); err != nil {
+		if hf.Properties.Headers, err = readTable(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagDeliveryMode) {
-		if err = binary.Read(me.r, binary.BigEndian, &hf.Properties.DeliveryMode); err != nil {
+		if err = binary.Read(me.R, binary.BigEndian, &hf.Properties.DeliveryMode); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagPriority) {
-		if err = binary.Read(me.r, binary.BigEndian, &hf.Properties.Priority); err != nil {
+		if err = binary.Read(me.R, binary.BigEndian, &hf.Properties.Priority); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagCorrelationId) {
-		if hf.Properties.CorrelationId, err = readShortstr(me.r); err != nil {
+		if hf.Properties.CorrelationId, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagReplyTo) {
-		if hf.Properties.ReplyTo, err = readShortstr(me.r); err != nil {
+		if hf.Properties.ReplyTo, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagExpiration) {
-		if hf.Properties.Expiration, err = readShortstr(me.r); err != nil {
+		if hf.Properties.Expiration, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagMessageId) {
-		if hf.Properties.MessageId, err = readShortstr(me.r); err != nil {
+		if hf.Properties.MessageId, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagTimestamp) {
-		if hf.Properties.Timestamp, err = readTimestamp(me.r); err != nil {
+		if hf.Properties.Timestamp, err = readTimestamp(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagType) {
-		if hf.Properties.Type, err = readShortstr(me.r); err != nil {
+		if hf.Properties.Type, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagUserId) {
-		if hf.Properties.UserId, err = readShortstr(me.r); err != nil {
+		if hf.Properties.UserId, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagAppId) {
-		if hf.Properties.AppId, err = readShortstr(me.r); err != nil {
+		if hf.Properties.AppId, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
 	if hasProperty(flags, flagReserved1) {
-		if hf.Properties.reserved1, err = readShortstr(me.r); err != nil {
+		if hf.Properties.reserved1, err = readShortstr(me.R); err != nil {
 			return
 		}
 	}
@@ -414,13 +414,13 @@ func (me *reader) parseHeaderFrame(channel uint16, size uint32) (frame frame, er
 	return hf, nil
 }
 
-func (me *reader) parseBodyFrame(channel uint16, size uint32) (frame frame, err error) {
+func (me *Reader) parseBodyFrame(channel uint16, size uint32) (frame frame, err error) {
 	bf := &bodyFrame{
 		ChannelId: channel,
 		Body:      make([]byte, size),
 	}
 
-	if _, err = io.ReadFull(me.r, bf.Body); err != nil {
+	if _, err = io.ReadFull(me.R, bf.Body); err != nil {
 		return nil, err
 	}
 
@@ -429,7 +429,7 @@ func (me *reader) parseBodyFrame(channel uint16, size uint32) (frame frame, err 
 
 var errHeartbeatPayload = errors.New("Heartbeats should not have a payload")
 
-func (me *reader) parseHeartbeatFrame(channel uint16, size uint32) (frame frame, err error) {
+func (me *Reader) parseHeartbeatFrame(channel uint16, size uint32) (frame frame, err error) {
 	hf := &heartbeatFrame{
 		ChannelId: channel,
 	}

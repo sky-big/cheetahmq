@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-type tcpAcceptor struct {
+type TcpAcceptor struct {
 	content *cheetahdContent
 }
 
 // tcp acceptor listen
-func (acceptor *tcpAcceptor) AcceptorListen(index int, listener net.Listener) {
+func (acceptor *TcpAcceptor) AcceptorListen(index int, listener net.Listener) {
 	acceptor.content.cheetahd.log.Info(fmt.Sprintf("TCPAcceptor%d: listening on %s", index, listener.Addr()))
 
 	for {
@@ -29,9 +29,12 @@ func (acceptor *tcpAcceptor) AcceptorListen(index int, listener net.Listener) {
 			}
 			break
 		}
-		// next start connection
-		connection := newCheetahdConnection(acceptor.content)
-		connection.startConnection(clientConn)
+		// next step start connection
+		connection := NewCheetahdConnection(acceptor.content)
+		if err := connection.StartConnection(clientConn); err != nil {
+			acceptor.content.cheetahd.log.Info("ERROR: NewCheetahdConnection error : %s", err)
+			break
+		}
 	}
 
 	acceptor.content.cheetahd.log.Info(fmt.Sprintf("TCP: closing %s", listener.Addr()))
