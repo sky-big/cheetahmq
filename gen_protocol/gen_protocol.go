@@ -150,7 +150,7 @@ var (
     /* Rebuild from the spec/gen.go tool */
 
     {{with .Root}}
-    package amqp
+    package protocol
 
     import (
         "fmt"
@@ -164,7 +164,7 @@ var (
 	// these constants.
 	const (
 	   {{range $c := .Constants}}
-	   {{if $c.IsError}}{{.Name | public}}{{else}}{{.Name | private}}{{end}} = {{.Value}}{{end}}
+	       {{if $c.IsError}}{{.Name | public}}{{else}}{{.Name | private}}{{end}} = {{.Value}}{{end}}
     )
 
 	func isSoftExceptionCode(code int) bool {
@@ -176,88 +176,88 @@ var (
 		return false
 	}
 
-  {{range .Classes}}
-    {{$class := .}}
-    {{range .Methods}}
-      {{$method := .}}
-			{{$struct := $.StructName $class.Name $method.Name}}
-      {{if .Docs}}/* {{range .Docs}} {{.Body | clean}} {{end}} */{{end}}
-      type {{$struct}} struct {
-        {{range .Fields}}
-        {{$.FieldName .}} {{$.FieldType . | $.NativeType}} {{if .Label}}// {{.Label}}{{end}}{{end}}
-				{{if .Content}}Properties properties
-				Body []byte{{end}}
-      }
-
-			func (me *{{$struct}}) id() (uint16, uint16) {
-				return {{$class.Index}}, {{$method.Index}}
-			}
-
-			func (me *{{$struct}}) wait() (bool) {
-				return {{.Synchronous}}{{if $.HasField "NoWait" .}} && !me.NoWait{{end}}
-			}
-
-			{{if .Content}}
-      func (me *{{$struct}}) getContent() (properties, []byte) {
-        return me.Properties, me.Body
-      }
-
-      func (me *{{$struct}}) setContent(props properties, body []byte) {
-        me.Properties, me.Body = props, body
-      }
-			{{end}}
-      func (me *{{$struct}}) write(w io.Writer) (err error) {
-				{{if $.HasType "bit" $method}}var bits byte{{end}}
-        {{.Fields | $.Fieldsets | $.Partial "enc-"}}
-        return
-      }
-
-      func (me *{{$struct}}) read(r io.Reader) (err error) {
-				{{if $.HasType "bit" $method}}var bits byte{{end}}
-        {{.Fields | $.Fieldsets | $.Partial "dec-"}}
-        return
-      }
-    {{end}}
-  {{end}}
-
-  func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
-    mf := &methodFrame {
-      ChannelId: channel,
-    }
-
-    if err = binary.Read(me.r, binary.BigEndian, &mf.ClassId); err != nil {
-      return
-    }
-
-    if err = binary.Read(me.r, binary.BigEndian, &mf.MethodId); err != nil {
-      return
-    }
-
-    switch mf.ClassId {
     {{range .Classes}}
-    {{$class := .}}
-    case {{.Index}}: // {{.Name}}
-      switch mf.MethodId {
-      {{range .Methods}}
-      case {{.Index}}: // {{$class.Name}} {{.Name}}
-        //fmt.Println("NextMethod: class:{{$class.Index}} method:{{.Index}}")
-        method := &{{$.StructName $class.Name .Name}}{}
-        if err = method.read(me.r); err != nil {
+        {{$class := .}}
+            {{range .Methods}}
+                {{$method := .}}
+    			     {{$struct := $.StructName $class.Name $method.Name}}
+                    {{if .Docs}}/* {{range .Docs}} {{.Body | clean}} {{end}} */{{end}}
+                    type {{$struct}} struct {
+                        {{range .Fields}}
+                            {{$.FieldName .}} {{$.FieldType . | $.NativeType}} {{if .Label}}// {{.Label}}{{end}}{{end}}
+        				{{if .Content}}Properties properties
+        				Body []byte{{end}}
+                    }
+
+        			func (me *{{$struct}}) id() (uint16, uint16) {
+        				return {{$class.Index}}, {{$method.Index}}
+        			}
+
+        			func (me *{{$struct}}) wait() (bool) {
+        				return {{.Synchronous}}{{if $.HasField "NoWait" .}} && !me.NoWait{{end}}
+        			}
+
+        			{{if .Content}}
+                        func (me *{{$struct}}) getContent() (properties, []byte) {
+                            return me.Properties, me.Body
+                        }
+
+                        func (me *{{$struct}}) setContent(props properties, body []byte) {
+                            me.Properties, me.Body = props, body
+                        }
+        			{{end}}
+                    func (me *{{$struct}}) write(w io.Writer) (err error) {
+            			{{if $.HasType "bit" $method}}var bits byte{{end}}
+                        {{.Fields | $.Fieldsets | $.Partial "enc-"}}
+                        return
+                    }
+
+                    func (me *{{$struct}}) read(r io.Reader) (err error) {
+        				{{if $.HasType "bit" $method}}var bits byte{{end}}
+                            {{.Fields | $.Fieldsets | $.Partial "dec-"}}
+                        return
+                    }
+            {{end}}
+    {{end}}
+
+    func (me *reader) parseMethodFrame(channel uint16, size uint32) (f frame, err error) {
+        mf := &methodFrame {
+            ChannelId: channel,
+        }
+
+        if err = binary.Read(me.r, binary.BigEndian, &mf.ClassId); err != nil {
           return
         }
-        mf.Method = method
-      {{end}}
-      default:
-        return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
-      }
-    {{end}}
-    default:
-      return nil, fmt.Errorf("Bad method frame, unknown class %d", mf.ClassId)
-    }
 
-    return mf, nil
-  }
-  {{end}}
+        if err = binary.Read(me.r, binary.BigEndian, &mf.MethodId); err != nil {
+          return
+        }
+
+        switch mf.ClassId {
+            {{range .Classes}}
+            {{$class := .}}
+                case {{.Index}}: // {{.Name}}
+                    switch mf.MethodId {
+                        {{range .Methods}}
+                            case {{.Index}}: // {{$class.Name}} {{.Name}}
+                            //fmt.Println("NextMethod: class:{{$class.Index}} method:{{.Index}}")
+                            method := &{{$.StructName $class.Name .Name}}{}
+                            if err = method.read(me.r); err != nil {
+                              return
+                            }
+                            mf.Method = method
+                        {{end}}
+                      default:
+                        return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
+                    }
+            {{end}}
+            default:
+              return nil, fmt.Errorf("Bad method frame, unknown class %d", mf.ClassId)
+            }
+
+            return mf, nil
+        }
+            {{end}}
 
   {{define "enc-bit"}}
     {{range $off, $field := .Fields}}
@@ -265,38 +265,47 @@ var (
     {{end}}
     if err = binary.Write(w, binary.BigEndian, bits); err != nil { return }
   {{end}}
+
   {{define "enc-octet"}}
     {{range .Fields}} if err = binary.Write(w, binary.BigEndian, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-shortshort"}}
     {{range .Fields}} if err = binary.Write(w, binary.BigEndian, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-short"}}
     {{range .Fields}} if err = binary.Write(w, binary.BigEndian, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-long"}}
     {{range .Fields}} if err = binary.Write(w, binary.BigEndian, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-longlong"}}
     {{range .Fields}} if err = binary.Write(w, binary.BigEndian, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-timestamp"}}
     {{range .Fields}} if err = writeTimestamp(w, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-shortstr"}}
     {{range .Fields}} if err = writeShortstr(w, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-longstr"}}
     {{range .Fields}} if err = writeLongstr(w, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "enc-table"}}
     {{range .Fields}} if err = writeTable(w, me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
@@ -309,43 +318,51 @@ var (
     {{range $off, $field := .Fields}} me.{{$field | $.FieldName}} = (bits & (1 << {{$off}}) > 0)
     {{end}}
   {{end}}
+
   {{define "dec-octet"}}
     {{range .Fields}} if err = binary.Read(r, binary.BigEndian, &me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-shortshort"}}
     {{range .Fields}} if err = binary.Read(r, binary.BigEndian, &me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-short"}}
     {{range .Fields}} if err = binary.Read(r, binary.BigEndian, &me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-long"}}
     {{range .Fields}} if err = binary.Read(r, binary.BigEndian, &me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-longlong"}}
     {{range .Fields}} if err = binary.Read(r, binary.BigEndian, &me.{{. | $.FieldName}}); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-timestamp"}}
     {{range .Fields}} if me.{{. | $.FieldName}}, err = readTimestamp(r); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-shortstr"}}
     {{range .Fields}} if me.{{. | $.FieldName}}, err = readShortstr(r); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-longstr"}}
     {{range .Fields}} if me.{{. | $.FieldName}}, err = readLongstr(r); err != nil { return }
     {{end}}
   {{end}}
+
   {{define "dec-table"}}
     {{range .Fields}} if me.{{. | $.FieldName}}, err = readTable(r); err != nil { return }
     {{end}}
   {{end}}
-
   `))
 )
 
@@ -482,6 +499,7 @@ func (me *renderer) Tag(d Domain) string {
 	return label
 }
 
+// get struct name
 func (me *renderer) StructName(parts ...string) string {
 	return parts[0] + public(parts[1:]...)
 }
@@ -490,10 +508,12 @@ func clean(body string) (res string) {
 	return strings.Replace(body, "\r", "", -1)
 }
 
+// match private variable
 func private(parts ...string) string {
 	return export(regexp.MustCompile(`[-_]\w`), parts...)
 }
 
+// match public variable
 func public(parts ...string) string {
 	return export(regexp.MustCompile(`^\w|[-_]\w`), parts...)
 }
@@ -501,10 +521,13 @@ func public(parts ...string) string {
 func export(delim *regexp.Regexp, parts ...string) (res string) {
 	for _, in := range parts {
 
+		// replace letter
 		res += delim.ReplaceAllStringFunc(in, func(match string) string {
 			switch len(match) {
+			// direct upper letter
 			case 1:
 				return strings.ToUpper(match)
+			// filter -_ character, then upper letter
 			case 2:
 				return strings.ToUpper(match[1:])
 			}
