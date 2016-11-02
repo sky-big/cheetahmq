@@ -5,7 +5,7 @@
 /* GENERATED FILE - DO NOT EDIT */
 /* Rebuild from the spec/gen.go tool */
 
-package protocol
+package main
 
 import (
 	"encoding/binary"

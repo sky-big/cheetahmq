@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"github.com/sky-big/cheetahmq/protocol"
 	"io"
 )
 
@@ -21,10 +20,10 @@ func NewCheetahdReader(content *cheetahdContent) *CheetahdReader {
 // start cheetahd reader
 func (reader *CheetahdReader) StartCheetahdReader(r io.Reader) error {
 	buf := bufio.NewReader(r)
-	frameReader := &protocol.Reader{buf}
+	frameReader := &Reader{buf}
 
 	for {
-		frame, err := protocol.ReadFrame(frameReader)
+		frame, err := ReadFrame(frameReader)
 		if err != nil {
 			reader.content.cheetahd.log.Info("cheetahd reader read frame error : %v", err)
 			return errors.New("cheetahd reader read frame error")
