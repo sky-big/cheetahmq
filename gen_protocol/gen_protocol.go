@@ -156,6 +156,7 @@ var (
         "fmt"
         "encoding/binary"
         "io"
+        "os"
     )
 
 	// Error codes that can be sent from the server during a connection or
@@ -204,6 +205,14 @@ var (
 
                         func (me *{{$struct}}) setContent(props properties, body []byte) {
                             me.Properties, me.Body = props, body
+                        }
+
+                        func (me *{{$struct}}) isHaveContent() bool {
+                            return true
+                        }
+                    {{else}}
+                        func (me *{{$struct}}) isHaveContent() bool {
+                            return false
                         }
         			{{end}}
                     func (me *{{$struct}}) write(w io.Writer) (err error) {
@@ -363,6 +372,49 @@ var (
     {{range .Fields}} if me.{{. | $.FieldName}}, err = readTable(r); err != nil { return }
     {{end}}
   {{end}}
+  // get amqp error info
+  func GetAmqpErrorInfo(reason string) (bool, uint16, string) {
+    switch reason {
+    case "content_too_large":
+        return false, ContentTooLarge, "CONTENT_TOO_LARGE"
+    case "no_route":
+        return false, NoRoute, "NO_ROUTE"
+    case "no_consumers":
+        return false, NoConsumers, "NO_CONSUMERS"
+    case "access_refused":
+        return false, AccessRefused, "ACCESS_REFUSED"
+    case "not_found":
+        return false, NotFound, "NOT_FOUND"
+    case "resource_locked":
+        return false, ResourceLocked, "RESOURCE_LOCKED"
+    case "precondition_failed":
+        return false, PreconditionFailed, "PRECONDITION_FAILED"
+    case "connection_forced":
+        return true, ConnectionForced, "CONNECTION_FORCED"
+    case "invalid_path":
+        return true, InvalidPath, "INVALID_PATH"
+    case "frame_error":
+        return true, FrameError, "FRAME_ERROR"
+    case "syntax_error":
+        return true, SyntaxError, "SYNTAX_ERROR"
+    case "command_invalid":
+        return true, CommandInvalid, "COMMAND_INVALID"
+    case "channel_error":
+        return true, ChannelError, "CHANNEL_ERROR"
+    case "unexpected_frame":
+        return true, UnexpectedFrame, "UNEXPECTED_FRAME"
+    case "resource_error":
+        return true, ResourceError, "RESOURCE_ERROR"
+    case "not_allowed":
+        return true, NotAllowed, "NOT_ALLOWED"
+    case "not_implemented":
+        return true, NotImplemented, "NOT_IMPLEMENTED"
+    case "internal_error":
+        return true, InternalError, "INTERNAL_ERROR"
+    }
+    os.Exit(1)
+    return false, 0, ""
+  }
   `))
 )
 

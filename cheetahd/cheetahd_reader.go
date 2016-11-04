@@ -7,13 +7,15 @@ import (
 )
 
 type CheetahdReader struct {
-	content *cheetahdContent
+	content   *cheetahdContent
+	frameChan chan frame
 }
 
 // init CheetahdReader
 func NewCheetahdReader(content *cheetahdContent) *CheetahdReader {
 	return &CheetahdReader{
-		content: content,
+		content:   content,
+		frameChan: make(chan frame),
 	}
 }
 
@@ -23,12 +25,14 @@ func (reader *CheetahdReader) StartCheetahdReader(r io.Reader) error {
 	frameReader := &Reader{buf}
 
 	for {
-		frame, err := ReadFrame(frameReader)
+		frame, err := frameReader.ReadFrame()
 		if err != nil {
 			reader.content.cheetahd.log.Info("cheetahd reader read frame error : %v", err)
 			return errors.New("cheetahd reader read frame error")
 		}
 		reader.content.cheetahd.log.Info("cheetahd reader receieve frame : %v", frame)
+		// send to chan
+		reader.frameChan <- frame
 	}
 
 	return nil

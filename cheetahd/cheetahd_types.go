@@ -20,6 +20,10 @@ var (
 	ErrFieldType       = &Error{Code: SyntaxError, Reason: "unsupported table field type"}
 )
 
+const (
+	ConnectionStarting = 1
+)
+
 // Error captures the code and reason a channel or connection has been closed
 // by the server.
 type Error struct {
@@ -227,6 +231,7 @@ func (me *tagSet) Pop() interface{} {
 type message interface {
 	id() (uint16, uint16)
 	wait() bool
+	isHaveContent() bool
 	read(io.Reader) error
 	write(io.Writer) error
 }

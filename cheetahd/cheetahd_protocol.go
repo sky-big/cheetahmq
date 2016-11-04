@@ -11,6 +11,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"os"
 )
 
 // Error codes that can be sent from the server during a connection or
@@ -82,6 +83,10 @@ func (me *connectionStart) wait() bool {
 	return true
 }
 
+func (me *connectionStart) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionStart) write(w io.Writer) (err error) {
 
 	if err = binary.Write(w, binary.BigEndian, me.VersionMajor); err != nil {
@@ -143,6 +148,10 @@ func (me *connectionStartOk) wait() bool {
 	return true
 }
 
+func (me *connectionStartOk) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionStartOk) write(w io.Writer) (err error) {
 
 	if err = writeTable(w, me.ClientProperties); err != nil {
@@ -197,6 +206,10 @@ func (me *connectionSecure) wait() bool {
 	return true
 }
 
+func (me *connectionSecure) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionSecure) write(w io.Writer) (err error) {
 
 	if err = writeLongstr(w, me.Challenge); err != nil {
@@ -225,6 +238,10 @@ func (me *connectionSecureOk) id() (uint16, uint16) {
 
 func (me *connectionSecureOk) wait() bool {
 	return true
+}
+
+func (me *connectionSecureOk) isHaveContent() bool {
+	return false
 }
 
 func (me *connectionSecureOk) write(w io.Writer) (err error) {
@@ -257,6 +274,10 @@ func (me *connectionTune) id() (uint16, uint16) {
 
 func (me *connectionTune) wait() bool {
 	return true
+}
+
+func (me *connectionTune) isHaveContent() bool {
+	return false
 }
 
 func (me *connectionTune) write(w io.Writer) (err error) {
@@ -307,6 +328,10 @@ func (me *connectionTuneOk) wait() bool {
 	return true
 }
 
+func (me *connectionTuneOk) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionTuneOk) write(w io.Writer) (err error) {
 
 	if err = binary.Write(w, binary.BigEndian, me.ChannelMax); err != nil {
@@ -353,6 +378,10 @@ func (me *connectionOpen) id() (uint16, uint16) {
 
 func (me *connectionOpen) wait() bool {
 	return true
+}
+
+func (me *connectionOpen) isHaveContent() bool {
+	return false
 }
 
 func (me *connectionOpen) write(w io.Writer) (err error) {
@@ -406,6 +435,10 @@ func (me *connectionOpenOk) wait() bool {
 	return true
 }
 
+func (me *connectionOpenOk) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionOpenOk) write(w io.Writer) (err error) {
 
 	if err = writeShortstr(w, me.reserved1); err != nil {
@@ -437,6 +470,10 @@ func (me *connectionClose) id() (uint16, uint16) {
 
 func (me *connectionClose) wait() bool {
 	return true
+}
+
+func (me *connectionClose) isHaveContent() bool {
+	return false
 }
 
 func (me *connectionClose) write(w io.Writer) (err error) {
@@ -490,6 +527,10 @@ func (me *connectionCloseOk) wait() bool {
 	return true
 }
 
+func (me *connectionCloseOk) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionCloseOk) write(w io.Writer) (err error) {
 
 	return
@@ -509,6 +550,10 @@ func (me *connectionBlocked) id() (uint16, uint16) {
 }
 
 func (me *connectionBlocked) wait() bool {
+	return false
+}
+
+func (me *connectionBlocked) isHaveContent() bool {
 	return false
 }
 
@@ -541,6 +586,10 @@ func (me *connectionUnblocked) wait() bool {
 	return false
 }
 
+func (me *connectionUnblocked) isHaveContent() bool {
+	return false
+}
+
 func (me *connectionUnblocked) write(w io.Writer) (err error) {
 
 	return
@@ -561,6 +610,10 @@ func (me *channelOpen) id() (uint16, uint16) {
 
 func (me *channelOpen) wait() bool {
 	return true
+}
+
+func (me *channelOpen) isHaveContent() bool {
+	return false
 }
 
 func (me *channelOpen) write(w io.Writer) (err error) {
@@ -593,6 +646,10 @@ func (me *channelOpenOk) wait() bool {
 	return true
 }
 
+func (me *channelOpenOk) isHaveContent() bool {
+	return false
+}
+
 func (me *channelOpenOk) write(w io.Writer) (err error) {
 
 	if err = writeLongstr(w, me.reserved1); err != nil {
@@ -621,6 +678,10 @@ func (me *channelFlow) id() (uint16, uint16) {
 
 func (me *channelFlow) wait() bool {
 	return true
+}
+
+func (me *channelFlow) isHaveContent() bool {
+	return false
 }
 
 func (me *channelFlow) write(w io.Writer) (err error) {
@@ -657,6 +718,10 @@ func (me *channelFlowOk) id() (uint16, uint16) {
 }
 
 func (me *channelFlowOk) wait() bool {
+	return false
+}
+
+func (me *channelFlowOk) isHaveContent() bool {
 	return false
 }
 
@@ -698,6 +763,10 @@ func (me *channelClose) id() (uint16, uint16) {
 
 func (me *channelClose) wait() bool {
 	return true
+}
+
+func (me *channelClose) isHaveContent() bool {
+	return false
 }
 
 func (me *channelClose) write(w io.Writer) (err error) {
@@ -751,6 +820,10 @@ func (me *channelCloseOk) wait() bool {
 	return true
 }
 
+func (me *channelCloseOk) isHaveContent() bool {
+	return false
+}
+
 func (me *channelCloseOk) write(w io.Writer) (err error) {
 
 	return
@@ -779,6 +852,10 @@ func (me *exchangeDeclare) id() (uint16, uint16) {
 
 func (me *exchangeDeclare) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *exchangeDeclare) isHaveContent() bool {
+	return false
 }
 
 func (me *exchangeDeclare) write(w io.Writer) (err error) {
@@ -867,6 +944,10 @@ func (me *exchangeDeclareOk) wait() bool {
 	return true
 }
 
+func (me *exchangeDeclareOk) isHaveContent() bool {
+	return false
+}
+
 func (me *exchangeDeclareOk) write(w io.Writer) (err error) {
 
 	return
@@ -890,6 +971,10 @@ func (me *exchangeDelete) id() (uint16, uint16) {
 
 func (me *exchangeDelete) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *exchangeDelete) isHaveContent() bool {
+	return false
 }
 
 func (me *exchangeDelete) write(w io.Writer) (err error) {
@@ -949,6 +1034,10 @@ func (me *exchangeDeleteOk) wait() bool {
 	return true
 }
 
+func (me *exchangeDeleteOk) isHaveContent() bool {
+	return false
+}
+
 func (me *exchangeDeleteOk) write(w io.Writer) (err error) {
 
 	return
@@ -974,6 +1063,10 @@ func (me *exchangeBind) id() (uint16, uint16) {
 
 func (me *exchangeBind) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *exchangeBind) isHaveContent() bool {
+	return false
 }
 
 func (me *exchangeBind) write(w io.Writer) (err error) {
@@ -1048,6 +1141,10 @@ func (me *exchangeBindOk) wait() bool {
 	return true
 }
 
+func (me *exchangeBindOk) isHaveContent() bool {
+	return false
+}
+
 func (me *exchangeBindOk) write(w io.Writer) (err error) {
 
 	return
@@ -1073,6 +1170,10 @@ func (me *exchangeUnbind) id() (uint16, uint16) {
 
 func (me *exchangeUnbind) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *exchangeUnbind) isHaveContent() bool {
+	return false
 }
 
 func (me *exchangeUnbind) write(w io.Writer) (err error) {
@@ -1147,6 +1248,10 @@ func (me *exchangeUnbindOk) wait() bool {
 	return true
 }
 
+func (me *exchangeUnbindOk) isHaveContent() bool {
+	return false
+}
+
 func (me *exchangeUnbindOk) write(w io.Writer) (err error) {
 
 	return
@@ -1174,6 +1279,10 @@ func (me *queueDeclare) id() (uint16, uint16) {
 
 func (me *queueDeclare) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *queueDeclare) isHaveContent() bool {
+	return false
 }
 
 func (me *queueDeclare) write(w io.Writer) (err error) {
@@ -1259,6 +1368,10 @@ func (me *queueDeclareOk) wait() bool {
 	return true
 }
 
+func (me *queueDeclareOk) isHaveContent() bool {
+	return false
+}
+
 func (me *queueDeclareOk) write(w io.Writer) (err error) {
 
 	if err = writeShortstr(w, me.Queue); err != nil {
@@ -1306,6 +1419,10 @@ func (me *queueBind) id() (uint16, uint16) {
 
 func (me *queueBind) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *queueBind) isHaveContent() bool {
+	return false
 }
 
 func (me *queueBind) write(w io.Writer) (err error) {
@@ -1380,6 +1497,10 @@ func (me *queueBindOk) wait() bool {
 	return true
 }
 
+func (me *queueBindOk) isHaveContent() bool {
+	return false
+}
+
 func (me *queueBindOk) write(w io.Writer) (err error) {
 
 	return
@@ -1404,6 +1525,10 @@ func (me *queueUnbind) id() (uint16, uint16) {
 
 func (me *queueUnbind) wait() bool {
 	return true
+}
+
+func (me *queueUnbind) isHaveContent() bool {
+	return false
 }
 
 func (me *queueUnbind) write(w io.Writer) (err error) {
@@ -1463,6 +1588,10 @@ func (me *queueUnbindOk) wait() bool {
 	return true
 }
 
+func (me *queueUnbindOk) isHaveContent() bool {
+	return false
+}
+
 func (me *queueUnbindOk) write(w io.Writer) (err error) {
 
 	return
@@ -1485,6 +1614,10 @@ func (me *queuePurge) id() (uint16, uint16) {
 
 func (me *queuePurge) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *queuePurge) isHaveContent() bool {
+	return false
 }
 
 func (me *queuePurge) write(w io.Writer) (err error) {
@@ -1540,6 +1673,10 @@ func (me *queuePurgeOk) wait() bool {
 	return true
 }
 
+func (me *queuePurgeOk) isHaveContent() bool {
+	return false
+}
+
 func (me *queuePurgeOk) write(w io.Writer) (err error) {
 
 	if err = binary.Write(w, binary.BigEndian, me.MessageCount); err != nil {
@@ -1572,6 +1709,10 @@ func (me *queueDelete) id() (uint16, uint16) {
 
 func (me *queueDelete) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *queueDelete) isHaveContent() bool {
+	return false
 }
 
 func (me *queueDelete) write(w io.Writer) (err error) {
@@ -1637,6 +1778,10 @@ func (me *queueDeleteOk) wait() bool {
 	return true
 }
 
+func (me *queueDeleteOk) isHaveContent() bool {
+	return false
+}
+
 func (me *queueDeleteOk) write(w io.Writer) (err error) {
 
 	if err = binary.Write(w, binary.BigEndian, me.MessageCount); err != nil {
@@ -1667,6 +1812,10 @@ func (me *basicQos) id() (uint16, uint16) {
 
 func (me *basicQos) wait() bool {
 	return true
+}
+
+func (me *basicQos) isHaveContent() bool {
+	return false
 }
 
 func (me *basicQos) write(w io.Writer) (err error) {
@@ -1721,6 +1870,10 @@ func (me *basicQosOk) wait() bool {
 	return true
 }
 
+func (me *basicQosOk) isHaveContent() bool {
+	return false
+}
+
 func (me *basicQosOk) write(w io.Writer) (err error) {
 
 	return
@@ -1748,6 +1901,10 @@ func (me *basicConsume) id() (uint16, uint16) {
 
 func (me *basicConsume) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *basicConsume) isHaveContent() bool {
+	return false
 }
 
 func (me *basicConsume) write(w io.Writer) (err error) {
@@ -1832,6 +1989,10 @@ func (me *basicConsumeOk) wait() bool {
 	return true
 }
 
+func (me *basicConsumeOk) isHaveContent() bool {
+	return false
+}
+
 func (me *basicConsumeOk) write(w io.Writer) (err error) {
 
 	if err = writeShortstr(w, me.ConsumerTag); err != nil {
@@ -1861,6 +2022,10 @@ func (me *basicCancel) id() (uint16, uint16) {
 
 func (me *basicCancel) wait() bool {
 	return true && !me.NoWait
+}
+
+func (me *basicCancel) isHaveContent() bool {
+	return false
 }
 
 func (me *basicCancel) write(w io.Writer) (err error) {
@@ -1908,6 +2073,10 @@ func (me *basicCancelOk) wait() bool {
 	return true
 }
 
+func (me *basicCancelOk) isHaveContent() bool {
+	return false
+}
+
 func (me *basicCancelOk) write(w io.Writer) (err error) {
 
 	if err = writeShortstr(w, me.ConsumerTag); err != nil {
@@ -1950,6 +2119,10 @@ func (me *basicPublish) getContent() (properties, []byte) {
 
 func (me *basicPublish) setContent(props properties, body []byte) {
 	me.Properties, me.Body = props, body
+}
+
+func (me *basicPublish) isHaveContent() bool {
+	return true
 }
 
 func (me *basicPublish) write(w io.Writer) (err error) {
@@ -2029,6 +2202,10 @@ func (me *basicReturn) setContent(props properties, body []byte) {
 	me.Properties, me.Body = props, body
 }
 
+func (me *basicReturn) isHaveContent() bool {
+	return true
+}
+
 func (me *basicReturn) write(w io.Writer) (err error) {
 
 	if err = binary.Write(w, binary.BigEndian, me.ReplyCode); err != nil {
@@ -2091,6 +2268,10 @@ func (me *basicDeliver) getContent() (properties, []byte) {
 
 func (me *basicDeliver) setContent(props properties, body []byte) {
 	me.Properties, me.Body = props, body
+}
+
+func (me *basicDeliver) isHaveContent() bool {
+	return true
 }
 
 func (me *basicDeliver) write(w io.Writer) (err error) {
@@ -2162,6 +2343,10 @@ func (me *basicGet) wait() bool {
 	return true
 }
 
+func (me *basicGet) isHaveContent() bool {
+	return false
+}
+
 func (me *basicGet) write(w io.Writer) (err error) {
 	var bits byte
 
@@ -2227,6 +2412,10 @@ func (me *basicGetOk) getContent() (properties, []byte) {
 
 func (me *basicGetOk) setContent(props properties, body []byte) {
 	me.Properties, me.Body = props, body
+}
+
+func (me *basicGetOk) isHaveContent() bool {
+	return true
 }
 
 func (me *basicGetOk) write(w io.Writer) (err error) {
@@ -2296,6 +2485,10 @@ func (me *basicGetEmpty) wait() bool {
 	return true
 }
 
+func (me *basicGetEmpty) isHaveContent() bool {
+	return false
+}
+
 func (me *basicGetEmpty) write(w io.Writer) (err error) {
 
 	if err = writeShortstr(w, me.reserved1); err != nil {
@@ -2324,6 +2517,10 @@ func (me *basicAck) id() (uint16, uint16) {
 }
 
 func (me *basicAck) wait() bool {
+	return false
+}
+
+func (me *basicAck) isHaveContent() bool {
 	return false
 }
 
@@ -2373,6 +2570,10 @@ func (me *basicReject) wait() bool {
 	return false
 }
 
+func (me *basicReject) isHaveContent() bool {
+	return false
+}
+
 func (me *basicReject) write(w io.Writer) (err error) {
 	var bits byte
 
@@ -2418,6 +2619,10 @@ func (me *basicRecoverAsync) wait() bool {
 	return false
 }
 
+func (me *basicRecoverAsync) isHaveContent() bool {
+	return false
+}
+
 func (me *basicRecoverAsync) write(w io.Writer) (err error) {
 	var bits byte
 
@@ -2453,6 +2658,10 @@ func (me *basicRecover) id() (uint16, uint16) {
 
 func (me *basicRecover) wait() bool {
 	return true
+}
+
+func (me *basicRecover) isHaveContent() bool {
+	return false
 }
 
 func (me *basicRecover) write(w io.Writer) (err error) {
@@ -2491,6 +2700,10 @@ func (me *basicRecoverOk) wait() bool {
 	return true
 }
 
+func (me *basicRecoverOk) isHaveContent() bool {
+	return false
+}
+
 func (me *basicRecoverOk) write(w io.Writer) (err error) {
 
 	return
@@ -2512,6 +2725,10 @@ func (me *basicNack) id() (uint16, uint16) {
 }
 
 func (me *basicNack) wait() bool {
+	return false
+}
+
+func (me *basicNack) isHaveContent() bool {
 	return false
 }
 
@@ -2564,6 +2781,10 @@ func (me *txSelect) wait() bool {
 	return true
 }
 
+func (me *txSelect) isHaveContent() bool {
+	return false
+}
+
 func (me *txSelect) write(w io.Writer) (err error) {
 
 	return
@@ -2583,6 +2804,10 @@ func (me *txSelectOk) id() (uint16, uint16) {
 
 func (me *txSelectOk) wait() bool {
 	return true
+}
+
+func (me *txSelectOk) isHaveContent() bool {
+	return false
 }
 
 func (me *txSelectOk) write(w io.Writer) (err error) {
@@ -2606,6 +2831,10 @@ func (me *txCommit) wait() bool {
 	return true
 }
 
+func (me *txCommit) isHaveContent() bool {
+	return false
+}
+
 func (me *txCommit) write(w io.Writer) (err error) {
 
 	return
@@ -2625,6 +2854,10 @@ func (me *txCommitOk) id() (uint16, uint16) {
 
 func (me *txCommitOk) wait() bool {
 	return true
+}
+
+func (me *txCommitOk) isHaveContent() bool {
+	return false
 }
 
 func (me *txCommitOk) write(w io.Writer) (err error) {
@@ -2648,6 +2881,10 @@ func (me *txRollback) wait() bool {
 	return true
 }
 
+func (me *txRollback) isHaveContent() bool {
+	return false
+}
+
 func (me *txRollback) write(w io.Writer) (err error) {
 
 	return
@@ -2667,6 +2904,10 @@ func (me *txRollbackOk) id() (uint16, uint16) {
 
 func (me *txRollbackOk) wait() bool {
 	return true
+}
+
+func (me *txRollbackOk) isHaveContent() bool {
+	return false
 }
 
 func (me *txRollbackOk) write(w io.Writer) (err error) {
@@ -2689,6 +2930,10 @@ func (me *confirmSelect) id() (uint16, uint16) {
 
 func (me *confirmSelect) wait() bool {
 	return true
+}
+
+func (me *confirmSelect) isHaveContent() bool {
+	return false
 }
 
 func (me *confirmSelect) write(w io.Writer) (err error) {
@@ -2725,6 +2970,10 @@ func (me *confirmSelectOk) id() (uint16, uint16) {
 
 func (me *confirmSelectOk) wait() bool {
 	return true
+}
+
+func (me *confirmSelectOk) isHaveContent() bool {
+	return false
 }
 
 func (me *confirmSelectOk) write(w io.Writer) (err error) {
@@ -3302,4 +3551,48 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 	}
 
 	return mf, nil
+}
+
+// get amqp error info
+func GetAmqpErrorInfo(reason string) (bool, uint16, string) {
+	switch reason {
+	case "content_too_large":
+		return false, ContentTooLarge, "CONTENT_TOO_LARGE"
+	case "no_route":
+		return false, NoRoute, "NO_ROUTE"
+	case "no_consumers":
+		return false, NoConsumers, "NO_CONSUMERS"
+	case "access_refused":
+		return false, AccessRefused, "ACCESS_REFUSED"
+	case "not_found":
+		return false, NotFound, "NOT_FOUND"
+	case "resource_locked":
+		return false, ResourceLocked, "RESOURCE_LOCKED"
+	case "precondition_failed":
+		return false, PreconditionFailed, "PRECONDITION_FAILED"
+	case "connection_forced":
+		return true, ConnectionForced, "CONNECTION_FORCED"
+	case "invalid_path":
+		return true, InvalidPath, "INVALID_PATH"
+	case "frame_error":
+		return true, FrameError, "FRAME_ERROR"
+	case "syntax_error":
+		return true, SyntaxError, "SYNTAX_ERROR"
+	case "command_invalid":
+		return true, CommandInvalid, "COMMAND_INVALID"
+	case "channel_error":
+		return true, ChannelError, "CHANNEL_ERROR"
+	case "unexpected_frame":
+		return true, UnexpectedFrame, "UNEXPECTED_FRAME"
+	case "resource_error":
+		return true, ResourceError, "RESOURCE_ERROR"
+	case "not_allowed":
+		return true, NotAllowed, "NOT_ALLOWED"
+	case "not_implemented":
+		return true, NotImplemented, "NOT_IMPLEMENTED"
+	case "internal_error":
+		return true, InternalError, "INTERNAL_ERROR"
+	}
+	os.Exit(1)
+	return false, 0, ""
 }

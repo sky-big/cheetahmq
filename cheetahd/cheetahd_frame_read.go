@@ -38,7 +38,7 @@ In realistic implementations where performance is a concern, we would use
 
 “gathering reads” to avoid doing three separate system calls to read a frame.
 */
-func ReadFrame(me *Reader) (frame frame, err error) {
+func (me *Reader) ReadFrame() (frame frame, err error) {
 	var scratch [7]byte
 
 	if _, err = io.ReadFull(me.R, scratch[:7]); err != nil {

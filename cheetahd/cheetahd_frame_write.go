@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func WriteFrame(me *Writer, frame frame) (err error) {
+func (me *Writer) WriteFrame(frame frame) (err error) {
 	if err = frame.write(me.W); err != nil {
 		return
 	}
