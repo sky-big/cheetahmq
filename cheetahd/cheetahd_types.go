@@ -22,6 +22,13 @@ var (
 
 const (
 	ConnectionStarting = 1
+	ConnectionTuning   = 2
+	ConnectionOpening  = 3
+	ConnectionRunning  = 4
+)
+
+const (
+	ChannelMinSize = 1
 )
 
 // Error captures the code and reason a channel or connection has been closed

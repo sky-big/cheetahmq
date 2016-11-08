@@ -19,6 +19,9 @@ func cheetahdFlagSet(opts *Options) *flag.FlagSet {
 	flagSet.String("tcp-listen-address", opts.TcpListenAddress, "<addr>:<port> to listen on for TCP clients")
 	flagSet.String("log-level", "info", "server log level")
 	flagSet.Int("tcp-acceptor-num", 2, "tcp listen acceptor groutine num")
+	flagSet.Int("frame-max", 0, "amqp frame max size")
+	flagSet.Int("channel-max", 65535, "one connection channel max size")
+	flagSet.Int("heartbeat", 60, "server and client heartbeat interval")
 
 	return flagSet
 }

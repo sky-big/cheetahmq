@@ -16,7 +16,7 @@ func NewAmapError(name string, explanationStr string, method message) *amqp_erro
 	}
 }
 
-func MakeExceptionMethod(channel uint16, amqpErrorInfo *amqp_error) frame {
+func MakeExceptionFrame(channel uint16, amqpErrorInfo *amqp_error) frame {
 	var classId, methodId uint16
 	var message message
 

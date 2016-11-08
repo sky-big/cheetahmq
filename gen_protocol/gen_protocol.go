@@ -157,6 +157,7 @@ var (
         "encoding/binary"
         "io"
         "os"
+        "log"
     )
 
 	// Error codes that can be sent from the server during a connection or
@@ -255,6 +256,7 @@ var (
                               return
                             }
                             mf.Method = method
+                            log.Printf("<<<<<<<<<< receieve method : {{$class.Name}} {{.Name}} class:{{$class.Index}} method:{{.Index}} : %v\n", method)
                         {{end}}
                       default:
                         return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)

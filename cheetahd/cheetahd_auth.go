@@ -1,47 +1,36 @@
 package main
 
-import (
-	"errors"
-)
+import ()
 
 const (
 	ALL_AUTH_TYPES = "PLAIN AMQPLAIN"
 )
 
-func GetUserAndPass(authType string, response []byte) (userName string, passwd string, err error) {
+type Auther interface {
+	Description() string
+	GetUserAndPass() error
+	AuthPassCorrectness() bool
+	GetUserName() string
+	GetUserPasswd() string
+}
+
+// new auth
+func NewAuth(authType string, response string) (auth Auther) {
 	switch authType {
 	case "PLAIN":
-		return PlainAuthTypeGetUserNameAndPass(response)
+		auth = &AuthPlain{response: response}
 	case "AMQPLAIN":
 	}
 
-	return "", "", errors.New("cheetahd auth error")
-}
-
-// PLAIN auth type parse username and passwd
-func PlainAuthTypeGetUserNameAndPass(response []byte) (userName string, passwd string, err error) {
-	userNameLength := getNextZeroPos(response[1:])
-	passwdLength := getNextZeroPos(response[userNameLength+2:])
-	if (userNameLength + passwdLength + 2) == len(response) {
-		userName = string(response[1 : userNameLength+1])
-		passwd = string(response[userNameLength+2:])
-		err = nil
-	} else {
-		userName = ""
-		passwd = ""
-		err = errors.New("client send auth user and pass error")
-	}
-
 	return
 }
 
-func getNextZeroPos(response []byte) (count int) {
-	for _, value := range response {
-		if value == 0 {
-			return
-		}
-		count = count + 1
-	}
+// parse username passwd by auth type
+func ParseUserNameAndPass(auth Auther) error {
+	return auth.GetUserAndPass()
+}
 
-	return
+// auth correctness
+func AuthCorrectness(auth Auther) bool {
+	return auth.AuthPassCorrectness()
 }

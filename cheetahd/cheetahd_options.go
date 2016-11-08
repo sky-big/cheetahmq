@@ -8,6 +8,9 @@ type Options struct {
 	TcpListenAddress string `flag:"tcp-listen-address" cfg:"tcp_listen_address"`
 	LogLevel         string `flag:"log-level"`
 	TcpAcceptorNum   int    `flag:"tcp-acceptor-num"`
+	FrameMax         int    `flag:"frame-max" cfg:"frame_max"`
+	ChannelMax       int    `flag:"channel-max" cfg:"channel_max"`
+	HeartBeat        int    `flag:"heartbeat" cfg:"heartbeat"`
 }
 
 func NewOptions() *Options {

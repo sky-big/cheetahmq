@@ -6,7 +6,9 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+	"log"
 	"math"
+	"reflect"
 	"time"
 )
 
@@ -30,6 +32,8 @@ func (me *methodFrame) write(w io.Writer) (err error) {
 	}
 
 	class, method := me.Method.id()
+
+	log.Printf(">>>>>>>>>>>>>> send method: %v class:%d  method:%d  message:%v\n", reflect.TypeOf(me.Method), class, method, reflect.ValueOf(me.Method))
 
 	if err = binary.Write(&payload, binary.BigEndian, class); err != nil {
 		return

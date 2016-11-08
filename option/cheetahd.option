@@ -1,1 +1,4 @@
 tcp_listen_address = "0.0.0.0:5672"
+frame_max = "0"
+channel_max = "65535"
+heartbeat = "60"
