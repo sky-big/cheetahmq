@@ -3012,7 +3012,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection start class:10 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection start class:10 method:10 : %v\n", method)
 
 		case 11: // connection start-ok
 			//fmt.Println("NextMethod: class:10 method:11")
@@ -3021,7 +3021,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection start-ok class:10 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection start-ok class:10 method:11 : %v\n", method)
 
 		case 20: // connection secure
 			//fmt.Println("NextMethod: class:10 method:20")
@@ -3030,7 +3030,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection secure class:10 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection secure class:10 method:20 : %v\n", method)
 
 		case 21: // connection secure-ok
 			//fmt.Println("NextMethod: class:10 method:21")
@@ -3039,7 +3039,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection secure-ok class:10 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection secure-ok class:10 method:21 : %v\n", method)
 
 		case 30: // connection tune
 			//fmt.Println("NextMethod: class:10 method:30")
@@ -3048,7 +3048,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection tune class:10 method:30 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection tune class:10 method:30 : %v\n", method)
 
 		case 31: // connection tune-ok
 			//fmt.Println("NextMethod: class:10 method:31")
@@ -3057,7 +3057,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection tune-ok class:10 method:31 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection tune-ok class:10 method:31 : %v\n", method)
 
 		case 40: // connection open
 			//fmt.Println("NextMethod: class:10 method:40")
@@ -3066,7 +3066,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection open class:10 method:40 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection open class:10 method:40 : %v\n", method)
 
 		case 41: // connection open-ok
 			//fmt.Println("NextMethod: class:10 method:41")
@@ -3075,7 +3075,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection open-ok class:10 method:41 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection open-ok class:10 method:41 : %v\n", method)
 
 		case 50: // connection close
 			//fmt.Println("NextMethod: class:10 method:50")
@@ -3084,7 +3084,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection close class:10 method:50 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection close class:10 method:50 : %v\n", method)
 
 		case 51: // connection close-ok
 			//fmt.Println("NextMethod: class:10 method:51")
@@ -3093,7 +3093,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection close-ok class:10 method:51 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection close-ok class:10 method:51 : %v\n", method)
 
 		case 60: // connection blocked
 			//fmt.Println("NextMethod: class:10 method:60")
@@ -3102,7 +3102,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection blocked class:10 method:60 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection blocked class:10 method:60 : %v\n", method)
 
 		case 61: // connection unblocked
 			//fmt.Println("NextMethod: class:10 method:61")
@@ -3111,7 +3111,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : connection unblocked class:10 method:61 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : connection unblocked class:10 method:61 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3127,7 +3127,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel open class:20 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel open class:20 method:10 : %v\n", method)
 
 		case 11: // channel open-ok
 			//fmt.Println("NextMethod: class:20 method:11")
@@ -3136,7 +3136,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel open-ok class:20 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel open-ok class:20 method:11 : %v\n", method)
 
 		case 20: // channel flow
 			//fmt.Println("NextMethod: class:20 method:20")
@@ -3145,7 +3145,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel flow class:20 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel flow class:20 method:20 : %v\n", method)
 
 		case 21: // channel flow-ok
 			//fmt.Println("NextMethod: class:20 method:21")
@@ -3154,7 +3154,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel flow-ok class:20 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel flow-ok class:20 method:21 : %v\n", method)
 
 		case 40: // channel close
 			//fmt.Println("NextMethod: class:20 method:40")
@@ -3163,7 +3163,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel close class:20 method:40 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel close class:20 method:40 : %v\n", method)
 
 		case 41: // channel close-ok
 			//fmt.Println("NextMethod: class:20 method:41")
@@ -3172,7 +3172,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : channel close-ok class:20 method:41 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : channel close-ok class:20 method:41 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3188,7 +3188,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange declare class:40 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange declare class:40 method:10 : %v\n", method)
 
 		case 11: // exchange declare-ok
 			//fmt.Println("NextMethod: class:40 method:11")
@@ -3197,7 +3197,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange declare-ok class:40 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange declare-ok class:40 method:11 : %v\n", method)
 
 		case 20: // exchange delete
 			//fmt.Println("NextMethod: class:40 method:20")
@@ -3206,7 +3206,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange delete class:40 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange delete class:40 method:20 : %v\n", method)
 
 		case 21: // exchange delete-ok
 			//fmt.Println("NextMethod: class:40 method:21")
@@ -3215,7 +3215,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange delete-ok class:40 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange delete-ok class:40 method:21 : %v\n", method)
 
 		case 30: // exchange bind
 			//fmt.Println("NextMethod: class:40 method:30")
@@ -3224,7 +3224,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange bind class:40 method:30 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange bind class:40 method:30 : %v\n", method)
 
 		case 31: // exchange bind-ok
 			//fmt.Println("NextMethod: class:40 method:31")
@@ -3233,7 +3233,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange bind-ok class:40 method:31 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange bind-ok class:40 method:31 : %v\n", method)
 
 		case 40: // exchange unbind
 			//fmt.Println("NextMethod: class:40 method:40")
@@ -3242,7 +3242,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange unbind class:40 method:40 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange unbind class:40 method:40 : %v\n", method)
 
 		case 51: // exchange unbind-ok
 			//fmt.Println("NextMethod: class:40 method:51")
@@ -3251,7 +3251,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : exchange unbind-ok class:40 method:51 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : exchange unbind-ok class:40 method:51 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3267,7 +3267,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue declare class:50 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue declare class:50 method:10 : %v\n", method)
 
 		case 11: // queue declare-ok
 			//fmt.Println("NextMethod: class:50 method:11")
@@ -3276,7 +3276,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue declare-ok class:50 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue declare-ok class:50 method:11 : %v\n", method)
 
 		case 20: // queue bind
 			//fmt.Println("NextMethod: class:50 method:20")
@@ -3285,7 +3285,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue bind class:50 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue bind class:50 method:20 : %v\n", method)
 
 		case 21: // queue bind-ok
 			//fmt.Println("NextMethod: class:50 method:21")
@@ -3294,7 +3294,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue bind-ok class:50 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue bind-ok class:50 method:21 : %v\n", method)
 
 		case 50: // queue unbind
 			//fmt.Println("NextMethod: class:50 method:50")
@@ -3303,7 +3303,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue unbind class:50 method:50 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue unbind class:50 method:50 : %v\n", method)
 
 		case 51: // queue unbind-ok
 			//fmt.Println("NextMethod: class:50 method:51")
@@ -3312,7 +3312,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue unbind-ok class:50 method:51 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue unbind-ok class:50 method:51 : %v\n", method)
 
 		case 30: // queue purge
 			//fmt.Println("NextMethod: class:50 method:30")
@@ -3321,7 +3321,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue purge class:50 method:30 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue purge class:50 method:30 : %v\n", method)
 
 		case 31: // queue purge-ok
 			//fmt.Println("NextMethod: class:50 method:31")
@@ -3330,7 +3330,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue purge-ok class:50 method:31 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue purge-ok class:50 method:31 : %v\n", method)
 
 		case 40: // queue delete
 			//fmt.Println("NextMethod: class:50 method:40")
@@ -3339,7 +3339,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue delete class:50 method:40 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue delete class:50 method:40 : %v\n", method)
 
 		case 41: // queue delete-ok
 			//fmt.Println("NextMethod: class:50 method:41")
@@ -3348,7 +3348,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : queue delete-ok class:50 method:41 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : queue delete-ok class:50 method:41 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3364,7 +3364,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic qos class:60 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic qos class:60 method:10 : %v\n", method)
 
 		case 11: // basic qos-ok
 			//fmt.Println("NextMethod: class:60 method:11")
@@ -3373,7 +3373,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic qos-ok class:60 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic qos-ok class:60 method:11 : %v\n", method)
 
 		case 20: // basic consume
 			//fmt.Println("NextMethod: class:60 method:20")
@@ -3382,7 +3382,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic consume class:60 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic consume class:60 method:20 : %v\n", method)
 
 		case 21: // basic consume-ok
 			//fmt.Println("NextMethod: class:60 method:21")
@@ -3391,7 +3391,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic consume-ok class:60 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic consume-ok class:60 method:21 : %v\n", method)
 
 		case 30: // basic cancel
 			//fmt.Println("NextMethod: class:60 method:30")
@@ -3400,7 +3400,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic cancel class:60 method:30 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic cancel class:60 method:30 : %v\n", method)
 
 		case 31: // basic cancel-ok
 			//fmt.Println("NextMethod: class:60 method:31")
@@ -3409,7 +3409,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic cancel-ok class:60 method:31 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic cancel-ok class:60 method:31 : %v\n", method)
 
 		case 40: // basic publish
 			//fmt.Println("NextMethod: class:60 method:40")
@@ -3418,7 +3418,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic publish class:60 method:40 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic publish class:60 method:40 : %v\n", method)
 
 		case 50: // basic return
 			//fmt.Println("NextMethod: class:60 method:50")
@@ -3427,7 +3427,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic return class:60 method:50 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic return class:60 method:50 : %v\n", method)
 
 		case 60: // basic deliver
 			//fmt.Println("NextMethod: class:60 method:60")
@@ -3436,7 +3436,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic deliver class:60 method:60 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic deliver class:60 method:60 : %v\n", method)
 
 		case 70: // basic get
 			//fmt.Println("NextMethod: class:60 method:70")
@@ -3445,7 +3445,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic get class:60 method:70 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic get class:60 method:70 : %v\n", method)
 
 		case 71: // basic get-ok
 			//fmt.Println("NextMethod: class:60 method:71")
@@ -3454,7 +3454,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic get-ok class:60 method:71 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic get-ok class:60 method:71 : %v\n", method)
 
 		case 72: // basic get-empty
 			//fmt.Println("NextMethod: class:60 method:72")
@@ -3463,7 +3463,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic get-empty class:60 method:72 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic get-empty class:60 method:72 : %v\n", method)
 
 		case 80: // basic ack
 			//fmt.Println("NextMethod: class:60 method:80")
@@ -3472,7 +3472,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic ack class:60 method:80 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic ack class:60 method:80 : %v\n", method)
 
 		case 90: // basic reject
 			//fmt.Println("NextMethod: class:60 method:90")
@@ -3481,7 +3481,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic reject class:60 method:90 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic reject class:60 method:90 : %v\n", method)
 
 		case 100: // basic recover-async
 			//fmt.Println("NextMethod: class:60 method:100")
@@ -3490,7 +3490,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic recover-async class:60 method:100 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic recover-async class:60 method:100 : %v\n", method)
 
 		case 110: // basic recover
 			//fmt.Println("NextMethod: class:60 method:110")
@@ -3499,7 +3499,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic recover class:60 method:110 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic recover class:60 method:110 : %v\n", method)
 
 		case 111: // basic recover-ok
 			//fmt.Println("NextMethod: class:60 method:111")
@@ -3508,7 +3508,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic recover-ok class:60 method:111 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic recover-ok class:60 method:111 : %v\n", method)
 
 		case 120: // basic nack
 			//fmt.Println("NextMethod: class:60 method:120")
@@ -3517,7 +3517,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : basic nack class:60 method:120 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : basic nack class:60 method:120 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3533,7 +3533,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx select class:90 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx select class:90 method:10 : %v\n", method)
 
 		case 11: // tx select-ok
 			//fmt.Println("NextMethod: class:90 method:11")
@@ -3542,7 +3542,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx select-ok class:90 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx select-ok class:90 method:11 : %v\n", method)
 
 		case 20: // tx commit
 			//fmt.Println("NextMethod: class:90 method:20")
@@ -3551,7 +3551,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx commit class:90 method:20 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx commit class:90 method:20 : %v\n", method)
 
 		case 21: // tx commit-ok
 			//fmt.Println("NextMethod: class:90 method:21")
@@ -3560,7 +3560,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx commit-ok class:90 method:21 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx commit-ok class:90 method:21 : %v\n", method)
 
 		case 30: // tx rollback
 			//fmt.Println("NextMethod: class:90 method:30")
@@ -3569,7 +3569,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx rollback class:90 method:30 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx rollback class:90 method:30 : %v\n", method)
 
 		case 31: // tx rollback-ok
 			//fmt.Println("NextMethod: class:90 method:31")
@@ -3578,7 +3578,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : tx rollback-ok class:90 method:31 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : tx rollback-ok class:90 method:31 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)
@@ -3594,7 +3594,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : confirm select class:85 method:10 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : confirm select class:85 method:10 : %v\n", method)
 
 		case 11: // confirm select-ok
 			//fmt.Println("NextMethod: class:85 method:11")
@@ -3603,7 +3603,7 @@ func (me *Reader) parseMethodFrame(channel uint16, size uint32) (f frame, err er
 				return
 			}
 			mf.Method = method
-			log.Printf("<<<<<<<<<< receieve method : confirm select-ok class:85 method:11 : %v\n", method)
+			log.Printf("<<<<<<<<<<<<<< receieve method : confirm select-ok class:85 method:11 : %v\n", method)
 
 		default:
 			return nil, fmt.Errorf("Bad method frame, unknown method %d for class %d", mf.MethodId, mf.ClassId)

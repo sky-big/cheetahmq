@@ -411,7 +411,7 @@ func (me *Reader) parseHeaderFrame(channel uint16, size uint32) (frame frame, er
 			return
 		}
 	}
-	log.Printf("<<<<<<<<<< receieve method : headerFrame : %v\n", hf)
+	log.Printf("<<<<<<<<<<<<<< receieve method : headerFrame : %v\n", hf)
 
 	return hf, nil
 }
@@ -425,7 +425,7 @@ func (me *Reader) parseBodyFrame(channel uint16, size uint32) (frame frame, err 
 	if _, err = io.ReadFull(me.R, bf.Body); err != nil {
 		return nil, err
 	}
-	log.Printf("<<<<<<<<<< receieve method : bodyFrame : %v\n", bf)
+	log.Printf("<<<<<<<<<<<<<< receieve method : bodyFrame : %v\n", bf)
 
 	return bf, nil
 }
@@ -440,7 +440,7 @@ func (me *Reader) parseHeartbeatFrame(channel uint16, size uint32) (frame frame,
 	if size > 0 {
 		return nil, errHeartbeatPayload
 	}
-	log.Printf("<<<<<<<<<< receieve method : heartbeat : %v\n", hf)
+	log.Printf("<<<<<<<<<<<<<< receieve method : heartbeat : %v\n", hf)
 
 	return hf, nil
 }

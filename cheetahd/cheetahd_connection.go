@@ -50,12 +50,12 @@ func NewCheetahdConnection(content *cheetahdContent, id MessageID) *CheetahdConn
 }
 
 // start connection
-func (connection *CheetahdConnection) StartConnection(conn net.Conn) error {
+func (connection *CheetahdConnection) StartConnection(conn net.Conn, connectionStopChan chan MessageID) error {
 	connection.content.cheetahd.log.Infof("one connection starting")
 
 	// start connection loop
 	connection.waitGroup.Wrap(func() {
-		connection.ConnectionMainLoop(conn)
+		connection.ConnectionMainLoop(conn, connectionStopChan)
 	})
 
 	connection.content.cheetahd.log.Infof("one connection started")
@@ -64,9 +64,10 @@ func (connection *CheetahdConnection) StartConnection(conn net.Conn) error {
 }
 
 // connection groutine main loop
-func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
+func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn, connectionStopChan chan MessageID) {
 	// connection handshake with client
 	var handshakeHead [8]byte
+
 	if _, err := io.ReadFull(conn, handshakeHead[:8]); err != nil {
 		connection.Exit(err)
 		return
@@ -85,7 +86,7 @@ func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
 	// start cheetahd_reader groutine
 	reader := NewCheetahdReader(connection.content)
 	connection.waitGroup.Wrap(func() {
-		reader.StartCheetahdReader(conn, connection.exitChan)
+		reader.StartCheetahdReader(conn)
 	})
 	connection.reader = reader
 
@@ -108,12 +109,15 @@ func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
 			if channelId == 0 {
 				switch detailFrame := frame.(type) {
 				case *methodFrame:
-					connection.handleMethod0(detailFrame)
+					if err := connection.handleMethod0(detailFrame); err != nil {
+						connectionStopChan <- connection.ID
+					}
 				case *heartbeatFrame:
 					connection.content.cheetahd.log.Infof("conection recv heartbeat")
 				default:
 					connection.content.cheetahd.log.Infof("connection recv 0 channelid frame not method frame : %v", frame)
 				}
+				continue
 			} else {
 				switch frame.(type) {
 				// handle methodFrame
@@ -125,6 +129,7 @@ func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
 				// handle heartbeatFrame
 				case *heartbeatFrame:
 					connection.Exit(errors.New("channelid not 0,but recv heartbeat msg"))
+					connectionStopChan <- connection.ID
 				default:
 					connection.content.cheetahd.log.Infof("connection recv error frame : %v", frame)
 				}
@@ -136,7 +141,7 @@ func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
 		// heartbeat notice connection timeout
 		case <-connection.heartBeatTimeOutChan:
 			connection.content.cheetahd.log.Infof("heartbeat timeout, connection exit")
-			connection.Exit(errors.New("heartbeat timeout, connection exit"))
+			connectionStopChan <- connection.ID
 		// connection exit
 		case <-connection.exitChan:
 			goto exit
@@ -144,7 +149,7 @@ func (connection *CheetahdConnection) ConnectionMainLoop(conn net.Conn) {
 	}
 
 exit:
-	connection.content.cheetahd.log.Infof("cheetahd connection normal exit")
+	connection.content.cheetahd.log.Infof("cheetahd connection closing...")
 }
 
 // send frame to client
@@ -207,54 +212,99 @@ func (connection *CheetahdConnection) makeServerCapabilities() (capabilities map
 }
 
 // handle channel 0 method
-func (connection *CheetahdConnection) handleMethod0(methodFrame *methodFrame) {
+func (connection *CheetahdConnection) handleMethod0(methodFrame *methodFrame) error {
 	switch connection.status {
 	case ConnectionStarting:
 		connection.handleStartConnectionOK(methodFrame)
+		return nil
+	case ConnectionSecuring:
+		connection.handleConnectionSecureOK(methodFrame)
+		return nil
 	case ConnectionTuning:
 		connection.handleConnectionTuneOK(methodFrame)
+		return nil
 	case ConnectionOpening:
 		connection.handleConnectionOpen(methodFrame)
+		return nil
 	default:
-		connection.Exit(errors.New("connection handleMethod0 status error"))
+		return errors.New("connection handleMethod0 status error")
 	}
 }
 
 // handle start connection ok msg from client
 func (connection *CheetahdConnection) handleStartConnectionOK(frame *methodFrame) {
-	if startConnectionOKMsg, ok := frame.Method.(*connectionStartOk); ok {
+	if startConnectionOKMethod, ok := frame.Method.(*connectionStartOk); ok {
 		// init client properties
-		connection.clientProperties = startConnectionOKMsg.ClientProperties
-		if capabilities, ok := startConnectionOKMsg.ClientProperties["capabilities"]; ok {
+		connection.clientProperties = startConnectionOKMethod.ClientProperties
+		if capabilities, ok := startConnectionOKMethod.ClientProperties["capabilities"]; ok {
 			connection.capabilities = capabilities.(Table)
 		}
-		connection.content.cheetahd.log.Infof("handleStartConnectionOK Respose info : %v", []byte(startConnectionOKMsg.Response))
+		connection.content.cheetahd.log.Infof("handleStartConnectionOK Respose info : %v", []byte(startConnectionOKMethod.Response))
+		// setup connection status securing
+		connection.status = ConnectionSecuring
+		// next to auth
+		connection.auth = NewAuth(startConnectionOKMethod.Mechanism)
+		connection.auth.SetResponse(startConnectionOKMethod.Response)
+		connection.Auth()
+	} else {
+		connection.Exit(errors.New("handleStartConnectionOK order error"))
+	}
+}
 
-		auth := NewAuth(startConnectionOKMsg.Mechanism, startConnectionOKMsg.Response)
-		if err := auth.GetUserAndPass(); err != nil {
-			amqpErrorInfo := NewAmapError("access_refused", startConnectionOKMsg.Response+"auth error", nil)
+// handle secure ok msg
+func (connection *CheetahdConnection) handleConnectionSecureOK(frame *methodFrame) {
+	if connectionSecureOKMethod, ok := frame.Method.(*connectionSecure); ok {
+		connection.auth.SetResponse(connectionSecureOKMethod.Challenge)
+		connection.Auth()
+	} else {
+		connection.Exit(errors.New("handleConnectionSecureOK order error"))
+	}
+}
+
+// connection auth
+func (connection *CheetahdConnection) Auth() {
+	switch connection.auth.HandleResponse() {
+	// handle response success
+	case AUTH_HANDLE_RESONSE_SUCCESS:
+		// success get username and passwd
+		connection.content.cheetahd.log.WithFields(logrus.Fields{
+			"username": connection.auth.GetUserName(),
+			"passwd":   connection.auth.GetUserPasswd(),
+		}).Info("user name and passwd :")
+		if connection.auth.AuthPassCorrectness() {
+			// username and passwd correct then send tune msg to client
+			connection.sendConnectionTuneMsgToClient()
+		} else {
+			errorStr := connection.auth.GetUserName() + connection.auth.GetUserPasswd() + "auth user or passwd not match"
+			amqpErrorInfo := NewAmapError("access_refused", errorStr, nil)
 			errorFrame := MakeExceptionFrame(0, amqpErrorInfo)
 			connection.sendFrameToClient(errorFrame)
-			connection.Exit(err)
-		} else {
-			// success get username and passwd
-			connection.content.cheetahd.log.WithFields(logrus.Fields{
-				"username": auth.GetUserName(),
-				"passwd":   auth.GetUserPasswd(),
-			}).Info("user name and passwd :")
-			if auth.AuthPassCorrectness() {
-				// username and passwd correct then send tune msg to client
-				connection.sendConnectionTuneMsgToClient()
-			} else {
-				errorStr := auth.GetUserName() + auth.GetUserPasswd() + "auth user or passwd not match"
-				amqpErrorInfo := NewAmapError("access_refused", errorStr, nil)
-				errorFrame := MakeExceptionFrame(0, amqpErrorInfo)
-				connection.sendFrameToClient(errorFrame)
-				connection.Exit(errors.New(errorStr))
-			}
+			connection.Exit(errors.New(errorStr))
 		}
-	} else {
-		connection.Exit(errors.New("handleStartConnectionOK message error"))
+	// plain response error
+	case AUTH_PLAIN_RESPONSE_HANDLE_TEXT_ERROR:
+		errorStr := "plain auth user or passwd not match"
+		amqpErrorInfo := NewAmapError("access_refused", errorStr, nil)
+		errorFrame := MakeExceptionFrame(0, amqpErrorInfo)
+		connection.sendFrameToClient(errorFrame)
+		connection.Exit(errors.New(errorStr))
+	// ampqplain response error
+	case AUTH_AMQPPLAIN_RESONSE_HANDLE_TEXT_ERROR:
+		errorStr := "amqpplain auth user or passwd not match"
+		amqpErrorInfo := NewAmapError("access_refused", errorStr, nil)
+		errorFrame := MakeExceptionFrame(0, amqpErrorInfo)
+		connection.sendFrameToClient(errorFrame)
+		connection.Exit(errors.New(errorStr))
+	// cr_demo auth need challenge(send connection secure msg to client require next response)
+	case AUTH_CR_DEMO_RESPONSE_HANDLE_CHALLENGE:
+		connectionTuneMethod := &connectionSecure{Challenge: "Please Input Your Passwd:"}
+		classId, methodId := connectionTuneMethod.id()
+		connection.sendFrameToClient(&methodFrame{
+			ChannelId: 0,
+			ClassId:   classId,
+			MethodId:  methodId,
+			Method:    connectionTuneMethod,
+		})
 	}
 }
 
@@ -273,7 +323,7 @@ func (connection *CheetahdConnection) sendConnectionTuneMsgToClient() {
 		MethodId:  methodId,
 		Method:    connectionTuneMsg,
 	})
-	// setup connection tuning
+	// setup connection status tuning
 	connection.status = ConnectionTuning
 }
 
@@ -321,18 +371,19 @@ func (connection *CheetahdConnection) handleConnectionOpen(method *methodFrame) 
 
 // start heartbeat
 func (connection *CheetahdConnection) startHeartBeat() {
+	connection.content.cheetahd.log.Infof("startHeartBeat : %d", connection.heartbeat)
 	// start send msg heartbeat check groutine
 	connection.heartBeatSendChan = make(chan bool)
-	connection.sendHeartBeater = NewHeartBeart(int64(connection.heartbeat), 0, connection.heartBeatSendChan, connection.content)
+	connection.sendHeartBeater = NewHeartBeart("HeartBeatSender", int64(connection.heartbeat)/2, 0, connection.heartBeatSendChan, connection.content)
 	connection.waitGroup.Wrap(func() {
-		HeartBeatLoop(connection.sendHeartBeater, connection.exitChan)
+		HeartBeatLoop(connection.sendHeartBeater)
 	})
 
 	// start recv msg heartbeat check groutine
 	connection.heartBeatTimeOutChan = make(chan bool)
-	connection.recvHeartBeater = NewHeartBeart(int64(connection.heartbeat), 1, connection.heartBeatTimeOutChan, connection.content)
+	connection.recvHeartBeater = NewHeartBeart("HeartBeatReceiver", int64(connection.heartbeat), 1, connection.heartBeatTimeOutChan, connection.content)
 	connection.waitGroup.Wrap(func() {
-		HeartBeatLoop(connection.recvHeartBeater, connection.exitChan)
+		HeartBeatLoop(connection.recvHeartBeater)
 	})
 }
 
@@ -374,20 +425,20 @@ func handshakeCheck(handshakeStr string) bool {
 
 // connection close
 func (connection *CheetahdConnection) Close() {
-	connection.Exit(errors.New("cheetahd notice connection normal close"))
+	connection.Exit(errors.New("connection normal Close"))
 }
 
 // connection exit
 func (connection *CheetahdConnection) Exit(err error) {
 	connection.content.cheetahd.log.Infof("connection exit reason : %v", err)
-	// unregister from cheetahd
-	connection.content.cheetahd.UnRegisterConnection(connection.ID)
-	// close heartbeat groutine
-	connection.sendHeartBeater.Exit()
-	connection.recvHeartBeater.Exit()
+	// stop heartbeat groutine
+	connection.sendHeartBeater.Close()
+	connection.recvHeartBeater.Close()
+	// stop reader groutine
+	connection.reader.Close()
 	// close self
 	close(connection.exitChan)
 	// wait group groutine stop
 	connection.waitGroup.Wait()
-	connection.content.cheetahd.log.Infof("connection exit completely")
+	connection.content.cheetahd.log.Infof("connection closed completely")
 }

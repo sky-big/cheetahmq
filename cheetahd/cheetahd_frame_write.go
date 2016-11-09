@@ -54,6 +54,7 @@ func (me *methodFrame) write(w io.Writer) (err error) {
 //
 // Payload is empty
 func (me *heartbeatFrame) write(w io.Writer) (err error) {
+	log.Printf(">>>>>>>>>>>>>> send heartbeat frame\n")
 	return writeFrame(w, frameHeartbeat, me.ChannelId, []byte{})
 }
 
@@ -68,6 +69,7 @@ func (me *headerFrame) write(w io.Writer) (err error) {
 	var payload bytes.Buffer
 	var zeroTime time.Time
 
+	log.Printf(">>>>>>>>>>>>>> send headerFrame : %v\n", me)
 	if err = binary.Write(&payload, binary.BigEndian, me.ClassId); err != nil {
 		return
 	}
@@ -203,6 +205,7 @@ func (me *headerFrame) write(w io.Writer) (err error) {
 // Payload is one byterange from the full body who's size is declared in the
 // Header frame
 func (me *bodyFrame) write(w io.Writer) (err error) {
+	log.Printf(">>>>>>>>>>>>>> send bodyFrame : %v\n", me)
 	return writeFrame(w, frameBody, me.ChannelId, me.Body)
 }
 

@@ -5,6 +5,7 @@ import (
 )
 
 type CheetahdHeartBeat struct {
+	name               string
 	heartbeatInterval  int64
 	retryTimes         uint8
 	curRetryTimes      uint8
@@ -12,23 +13,26 @@ type CheetahdHeartBeat struct {
 	lastSendOrRecvTime int64
 	operateChan        chan bool
 	content            *cheetahdContent
+	exitChan           chan bool
 }
 
 // new heartbeat info
-func NewHeartBeart(heartbeatInterval int64, retryTimes uint8, operateChan chan bool, content *cheetahdContent) *CheetahdHeartBeat {
+func NewHeartBeart(name string, heartbeatInterval int64, retryTimes uint8, operateChan chan bool, content *cheetahdContent) *CheetahdHeartBeat {
 	return &CheetahdHeartBeat{
+		name:              name,
 		heartbeatInterval: heartbeatInterval,
 		retryTimes:        retryTimes,
 		curRetryTimes:     0,
 		checkInterval:     time.Second,
 		operateChan:       operateChan,
 		content:           content,
+		exitChan:          make(chan bool),
 	}
 }
 
 // heartbeat loop
-func HeartBeatLoop(heartbeat *CheetahdHeartBeat, exitChan chan bool) {
-	ticker := time.NewTicker(time.Millisecond * 1000 * heartbeat.checkInterval)
+func HeartBeatLoop(heartbeat *CheetahdHeartBeat) {
+	ticker := time.NewTicker(heartbeat.checkInterval)
 
 	for {
 		select {
@@ -41,14 +45,17 @@ func HeartBeatLoop(heartbeat *CheetahdHeartBeat, exitChan chan bool) {
 					heartbeat.curRetryTimes = heartbeat.curRetryTimes + 1
 				}
 			}
-		case <-exitChan:
+		case <-heartbeat.exitChan:
 			goto exit
 		}
 	}
 
 exit:
+	// stop ticker
+	ticker.Stop()
 	heartbeat.content.cheetahd.log.Infof("heartbeat groutine normal exit")
 }
 
-func (hearbeat *CheetahdHeartBeat) Exit() {
+func (hearbeat *CheetahdHeartBeat) Close() {
+	close(hearbeat.exitChan)
 }

@@ -17,16 +17,17 @@ import (
 // cheetahd server struct
 type Cheetahd struct {
 	sync.RWMutex
-	waitGroup     util.WaitGroupWrapper
-	name          string `cheetahmq name`
-	version       string `cheetahmq server version`
-	options       *Options
-	log           *logrus.Logger
-	tcpListener   net.Listener
-	ID            int64
-	exitChan      chan bool
-	idChan        chan MessageID
-	connectionMap map[MessageID]*CheetahdConnection
+	waitGroup          util.WaitGroupWrapper
+	name               string `cheetahmq name`
+	version            string `cheetahmq server version`
+	options            *Options
+	log                *logrus.Logger
+	tcpListener        net.Listener
+	ID                 int64
+	exitChan           chan bool
+	idChan             chan MessageID
+	connectionMap      map[MessageID]*CheetahdConnection
+	connectionStopChan chan MessageID
 }
 
 // create Cheetahd Struct
@@ -41,13 +42,14 @@ func NewCheetahd(options *Options) (cheetahd *Cheetahd) {
 	defaultID := int64(crc32.ChecksumIEEE(h.Sum(nil)) % 1024)
 
 	cheetahd = &Cheetahd{
-		name:          "CheetahMQ Server",
-		version:       "0.1.0",
-		options:       options,
-		ID:            defaultID,
-		connectionMap: make(map[MessageID]*CheetahdConnection),
-		exitChan:      make(chan bool),
-		idChan:        make(chan MessageID),
+		name:               "CheetahMQ Server",
+		version:            "0.1.0",
+		options:            options,
+		ID:                 defaultID,
+		connectionMap:      make(map[MessageID]*CheetahdConnection),
+		connectionStopChan: make(chan MessageID),
+		exitChan:           make(chan bool),
+		idChan:             make(chan MessageID),
 	}
 
 	// log
@@ -71,9 +73,14 @@ func (cheetahd *Cheetahd) Start() {
 	cheetahd.tcpListener = tcpListener
 	cheetahd.Unlock()
 
+	// start cheetahd main loop
+	cheetahd.waitGroup.Wrap(func() {
+		cheetahd.mainLoop()
+	})
+
 	// start gen id groutine
 	cheetahd.waitGroup.Wrap(func() {
-		cheetahd.NewId()
+		cheetahd.newId()
 	})
 
 	// start tcp acceptor groutime by option
@@ -86,7 +93,22 @@ func (cheetahd *Cheetahd) Start() {
 	}
 }
 
-func (cheetahd *Cheetahd) NewId() {
+// cheetahd main loop
+func (cheetahd *Cheetahd) mainLoop() {
+	for {
+		select {
+		case ConnectionId := <-cheetahd.connectionStopChan:
+			cheetahd.unRegisterConnection(ConnectionId)
+		case <-cheetahd.exitChan:
+			goto exit
+		}
+	}
+
+exit:
+	cheetahd.log.Infof("cheetahd main loop stop")
+}
+
+func (cheetahd *Cheetahd) newId() {
 	factory := &guidFactory{}
 	lastError := time.Unix(0, 0)
 	workerID := cheetahd.ID
@@ -114,13 +136,16 @@ exit:
 }
 
 // register connection
-func (cheetahd *Cheetahd) Register(ID MessageID, connection *CheetahdConnection) {
+func (cheetahd *Cheetahd) register(ID MessageID, connection *CheetahdConnection) {
 	cheetahd.connectionMap[ID] = connection
 }
 
 // unregister connection
-func (cheetahd *Cheetahd) UnRegisterConnection(ID MessageID) {
-	delete(cheetahd.connectionMap, ID)
+func (cheetahd *Cheetahd) unRegisterConnection(ID MessageID) {
+	if connection, ok := cheetahd.connectionMap[ID]; ok {
+		connection.Close()
+		delete(cheetahd.connectionMap, ID)
+	}
 }
 
 // cheetahmq server exit
@@ -130,8 +155,8 @@ func (cheetahd *Cheetahd) Exit() {
 	cheetahd.tcpListener.Close()
 	cheetahd.Unlock()
 	// close all connection
-	for _, connection := range cheetahd.connectionMap {
-		connection.Close()
+	for ConnectionId, _ := range cheetahd.connectionMap {
+		cheetahd.unRegisterConnection(ConnectionId)
 	}
 	// close cheetahd exit chan
 	close(cheetahd.exitChan)

@@ -22,9 +22,10 @@ var (
 
 const (
 	ConnectionStarting = 1
-	ConnectionTuning   = 2
-	ConnectionOpening  = 3
-	ConnectionRunning  = 4
+	ConnectionSecuring = 2
+	ConnectionTuning   = 3
+	ConnectionOpening  = 4
+	ConnectionRunning  = 5
 )
 
 const (

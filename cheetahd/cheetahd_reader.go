@@ -11,6 +11,7 @@ type CheetahdReader struct {
 	content     *cheetahdContent
 	frameChan   chan frame
 	frameReader *Reader
+	exitChan    chan bool
 }
 
 // init CheetahdReader
@@ -18,21 +19,20 @@ func NewCheetahdReader(content *cheetahdContent) *CheetahdReader {
 	return &CheetahdReader{
 		content:   content,
 		frameChan: make(chan frame),
+		exitChan:  make(chan bool),
 	}
 }
 
 // start cheetahd reader
-func (reader *CheetahdReader) StartCheetahdReader(r net.Conn, exitChan chan bool) error {
-	buf := bufio.NewReader(r)
+func (reader *CheetahdReader) StartCheetahdReader(conn net.Conn) error {
+	buf := bufio.NewReader(conn)
 	reader.frameReader = &Reader{buf}
 
 	for {
-		// check connection exit
+		// check reader exit
 		select {
-		// send to chan(connection close need close reader groutine)
-		case <-exitChan:
+		case <-reader.exitChan:
 			goto exit
-		// nothing to do
 		default:
 		}
 		// recv frame from socket
@@ -50,6 +50,15 @@ func (reader *CheetahdReader) StartCheetahdReader(r net.Conn, exitChan chan bool
 	}
 
 exit:
+	conn.Close()
+	reader.exitChan = nil
 	reader.content.cheetahd.log.Infof("cheetahd reader close")
 	return nil
+}
+
+// stop
+func (reader *CheetahdReader) Close() {
+	if reader.exitChan != nil {
+		reader.exitChan <- true
+	}
 }

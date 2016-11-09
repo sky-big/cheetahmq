@@ -1,8 +1,6 @@
 package main
 
-import (
-	"errors"
-)
+import ()
 
 type AuthPlain struct {
 	userName string
@@ -14,8 +12,12 @@ func (auth *AuthPlain) Description() string {
 	return "SASL PLAIN authentication mechanism"
 }
 
+func (auth *AuthPlain) SetResponse(response string) {
+	auth.response = response
+}
+
 // PLAIN auth type parse username and passwd
-func (auth *AuthPlain) GetUserAndPass() error {
+func (auth *AuthPlain) HandleResponse() int {
 	response := []byte(auth.response)
 
 	if len(response) > 2 {
@@ -25,22 +27,24 @@ func (auth *AuthPlain) GetUserAndPass() error {
 			if (userNameLength + passwdLength + 2) == len(response) {
 				auth.userName = string(response[1 : userNameLength+1])
 				auth.passwd = string(response[userNameLength+2:])
-				return nil
+				return AUTH_HANDLE_RESONSE_SUCCESS
 			} else {
 				auth.userName = ""
 				auth.passwd = ""
-				return errors.New("AuthPlain Response text error")
+				return AUTH_PLAIN_RESPONSE_HANDLE_TEXT_ERROR
 			}
 		} else {
 			auth.userName = ""
 			auth.passwd = ""
-			return errors.New("AuthPlain Response text error")
+			return AUTH_PLAIN_RESPONSE_HANDLE_TEXT_ERROR
 		}
 	} else {
 		auth.userName = ""
 		auth.passwd = ""
-		return errors.New("AuthPlain Response text error")
+		return AUTH_PLAIN_RESPONSE_HANDLE_TEXT_ERROR
 	}
+
+	return AUTH_PLAIN_RESPONSE_HANDLE_TEXT_ERROR
 }
 
 func (auth *AuthPlain) AuthPassCorrectness() bool {

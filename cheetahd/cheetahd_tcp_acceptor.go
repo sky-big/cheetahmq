@@ -34,10 +34,10 @@ func (acceptor *TcpAcceptor) AcceptorListen(index int, listener net.Listener) {
 		connection := NewCheetahdConnection(acceptor.content, MessageID)
 		// connection loop
 		acceptor.content.cheetahd.waitGroup.Wrap(func() {
-			connection.StartConnection(clientConn)
+			connection.StartConnection(clientConn, acceptor.content.cheetahd.connectionStopChan)
 		})
 		// connection register to cheetahd
-		acceptor.content.cheetahd.Register(MessageID, connection)
+		acceptor.content.cheetahd.register(MessageID, connection)
 	}
 
 	acceptor.content.cheetahd.log.Infof(fmt.Sprintf("TCP: closing %s", listener.Addr()))
